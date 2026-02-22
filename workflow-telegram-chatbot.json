@@ -1,0 +1,433 @@
+{
+  "name": "workflow-telegram-chatbot",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      message_nada_econtrado:\n        \"❌ Cidade não encontrada. Use o formato Cidade,UF (ex.: São Paulo,SP).\",\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        704,
+        240
+      ],
+      "id": "340c16a2-61a1-4fe6-825c-c5082f16296b",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger1').item.json.message.chat.id }}",
+        "text": "={{ $json.mensagem_fallback || JSON.parse($json.text).message}}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1360,
+        96
+      ],
+      "id": "6786fa58-37fe-42e4-b5d0-5298f51b90b6",
+      "name": "Send a text message",
+      "webhookId": "47cf85a7-eb38-4896-9245-3db6f7951b8e",
+      "credentials": {
+        "telegramApi": {
+          "id": "t3j2g66Bi2Kcv67T",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -432,
+        32
+      ],
+      "id": "8919a9e2-c3f6-4fd8-adda-7904c41c1584",
+      "name": "Telegram Trigger1",
+      "webhookId": "1dc97171-d211-4f7e-8a17-cac8cc3e621c",
+      "credentials": {
+        "telegramApi": {
+          "id": "t3j2g66Bi2Kcv67T",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.openweathermap.org/data/2.5/weather",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openWeatherMapApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "units",
+              "value": "metric"
+            },
+            {
+              "name": "lang",
+              "value": "pt_br"
+            },
+            {
+              "name": "q",
+              "value": "={{ $json.cidade_formatada }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        160,
+        32
+      ],
+      "id": "6d69b4d6-9c9d-456a-90db-f61365512145",
+      "name": "HTTP Request1",
+      "retryOnFail": false,
+      "maxTries": 2,
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "IZpAlLQf4vtsW0zf",
+          "name": "OpenWeatherMap account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const cidade = $input.first().json.name\nconst temperatura = $input.first().json.main.temp\n\n// Arredondar apenas se necessário\nconst temperaturaFinal = Number.isInteger(temperatura)\n  ? temperatura\n  : Math.round(temperatura);\n\n// Criar string final\nconst mensagemFinal = `🌤️ A temperatura em ${cidade} é de ${temperaturaFinal}°C`;\n\nreturn [\n  {\n    json: {\n      cidade,\n      temperaturaOriginal: temperatura,\n      temperaturaArredondada: temperaturaFinal,\n      mensagem_final: mensagemFinal\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        32
+      ],
+      "id": "898d2633-389b-44a4-874e-15e4b68990d2",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "022e92bb-0bc2-4852-a246-b3fee8bc96d4",
+              "name": "queue",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -224,
+        32
+      ],
+      "id": "c446e58c-0187-4b0f-8551-9d6daa0737f0",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Você atua como refinador de texto para um bot de informações meteorológicas.\n\nOBJETIVO:\nMelhorar a mensagem recebida, tornando-a:\n- Clara\n- Natural\n- Objetiva\n- Profissional\n- Em português do Brasil\n\nREGRAS IMPORTANTES:\n- Preserve integralmente os dados numéricos.\n- Não inclua informações que não estejam no texto original.\n- Não altere valores.\n- Não utilize markdown.\n- Não adicione comentários.\n- Não explique nada fora da resposta.\n- Retorne apenas JSON válido.\n- O JSON deve conter exatamente as chaves: \"message\" e \"ok\".\n\nTRATAMENTO DE ERRO:\nSe a mensagem indicar que a cidade não foi encontrada, reformule de maneira educada e informe que o problema pode estar relacionado à grafia ou ausência de acentuação no nome da cidade.\n\nFORMATO DE RESPOSTA OBRIGATÓRIO:\n{\"message\":\"<texto aprimorado>\",\"ok\":true}\n\nSe a entrada estiver vazia ou inválida:\n{\"message\":\"Não foi possível gerar a resposta.\",\"ok\":false}\n\nENTRADA:\n {{ $json.mensagem_final || $json.message_nada_econtrado }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        880,
+        128
+      ],
+      "id": "967f2c1f-2a78-4646-a2d3-96fdcd0e1f73",
+      "name": "Basic LLM Chain",
+      "retryOnFail": true,
+      "executeOnce": false,
+      "alwaysOutputData": false,
+      "notesInFlow": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        864,
+        352
+      ],
+      "id": "26f5a77b-f7e1-4ee9-8a6b-1a71e34fc90e",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JEFctuIpx54A51JX",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let input = $input.first().json.queue|| \"\";\n\n// 1. Remove espaços extras\ninput = input.trim().replace(/\\s+/g, \" \");\n\n// 2. Remove apóstrofos (normal e tipográfico)\ninput = input.replace(/[’']/g, \"\");\n\n// 3. Remove espaços extras novamente (caso tenha criado espaços duplos)\ninput = input.trim().replace(/\\s+/g, \" \");\n\nlet cidade = \"\";\nlet estado = \"\";\nlet pais = \"BR\"; // padrão\n\n// 4. Se usar vírgula → prioriza formato oficial\nif (input.includes(\",\")) {\n\n    let partes = input.split(\",\").map(p => p.trim());\n\n    cidade = partes[0];\n\n    if (partes[1] && partes[1].length === 2) {\n        estado = partes[1].toUpperCase();\n    }\n\n    if (partes[2] && partes[2].length === 2) {\n        pais = partes[2].toUpperCase();\n    }\n\n} else {\n\n    let partes = input.split(\" \");\n\n    if (partes.length > 1 && /^[a-zA-Z]{2}$/.test(partes[partes.length - 1])) {\n        pais = partes.pop().toUpperCase();\n    }\n\n    if (partes.length > 1 && /^[a-zA-Z]{2}$/.test(partes[partes.length - 1])) {\n        estado = partes.pop().toUpperCase();\n    }\n\n    cidade = partes.join(\" \");\n}\n\n// 5. Ajusta capitalização mantendo acento\ncidade = cidade\n    .toLowerCase()\n    .split(\" \")\n    .map(p => p.charAt(0).toUpperCase() + p.slice(1))\n    .join(\" \");\n\n// 6. Monta query final\nlet queryFinal = estado \n    ? `${cidade},${estado},${pais}`\n    : `${cidade},${pais}`;\n\n// 7. Encode para URL\nlet queryEncoded = encodeURIComponent(queryFinal);\n\nreturn [\n  {\n    json: {\n      cidade_formatada: queryFinal,\n      cidade_url: queryEncoded\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        32
+      ],
+      "id": "242dd269-d592-4603-a200-24b523c697e9",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": "let texto = $json.cidade_formatada || \"\";\n\n// Remove acentos\nlet semAcento = texto\n  .normalize(\"NFD\")\n  .replace(/[\\u0300-\\u036f]/g, \"\");\n\nreturn [\n  {\n    json: {\n      ...$json,\n      cidade_sem_acentos: semAcento\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        160
+      ],
+      "id": "049a6ff2-702b-43b9-9590-cb01480aac02",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "url": "https://api.openweathermap.org/data/2.5/weather",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openWeatherMapApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "units",
+              "value": "metric"
+            },
+            {
+              "name": "lang",
+              "value": "pt_br"
+            },
+            {
+              "name": "q",
+              "value": "={{ $json.cidade_sem_acentos }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        496,
+        208
+      ],
+      "id": "2961489a-7c1c-4c55-bca3-ecdcdcdb78b4",
+      "name": "HTTP Request",
+      "retryOnFail": false,
+      "maxTries": 2,
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "IZpAlLQf4vtsW0zf",
+          "name": "OpenWeatherMap account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7cdf1508-e938-452a-a3d8-afe897a4f576",
+              "name": "mensagem_fallback",
+              "value": "={{$json.mensagem_final || $json.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1152,
+        256
+      ],
+      "id": "76b8713d-0db7-4376-a90d-4620cb610d6b",
+      "name": "Edit Fields1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "d8c1004d-56d6-4e16-b3d3-6b7045a3da52",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f847b9d81e5e3d670e25bbda2c8c4fc3f8fa27fa129ac22fbc4a67ab532ce539"
+  },
+  "id": "jYZxlnEMzJ7IO0cH",
+  "tags": []
+}
