@@ -25,25 +25,21 @@ Para que o workflow opere corretamente, as seguintes credenciais devem ser confi
 
 ---
 
-## 📥 Guia de Instalação (Passo a Passo)
+## 📥 Guia de Instalação e Importação (Passo a Passo)
 
-1. **Download do Projeto:** Baixe o arquivo `workflow-telegram-chatbot (1).json`.
-2. **Importação no n8n:**
-* Acesse sua instância do n8n.
-* No painel lateral, vá em **Workflows** > **Add Workflow**.
-* No menu de opções (três pontos no canto superior direito), selecione **Import from File**.
-* Selecione o arquivo JSON baixado.
+Para garantir que o projeto seja replicado sem erros, siga rigorosamente estas etapas:
 
-
-3. **Vinculação de Credenciais:**
-* Abra os nós **Telegram Trigger1**, **HTTP Request1** e **Google Gemini Chat Model**.
-* Em cada um, selecione a credencial correspondente criada previamente no seu painel de `Credentials`.
+1. **Download do Arquivo:** Obtenha o arquivo `workflow-telegram-chatbot (1).json`.
+2. **Acesso ao n8n:** Abra sua instância do n8n (Desktop, Cloud ou Self-hosted).
+3. **Importação:**
+* No menu lateral esquerdo, clique em **Workflows**.
+* Clique no botão **Add Workflow** (ou abra um novo).
+* No menu de três pontos (`...`) no canto superior direito, selecione **Import from File**.
+* Selecione o arquivo `.json` baixado.
 
 
-4. **Ativação:**
-* Clique no botão **Save** e, em seguida, alterne a chave para **Active** no canto superior direito para registrar o webhook no Telegram.
-
-
+4. **Configuração de Credenciais:** Os nós importados aparecerão com ícones de alerta. Você deve clicar neles e vincular suas chaves (veja a seção abaixo).
+5. **Ativação:** Salve o workflow (`Ctrl+S`) e alterne a chave para **Active**. Isso registrará o webhook automaticamente no Telegram.
 
 ---
 
