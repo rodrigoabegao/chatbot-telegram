@@ -8,10 +8,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        704,
-        240
+        1472,
+        0
       ],
-      "id": "340c16a2-61a1-4fe6-825c-c5082f16296b",
+      "id": "d83ae9f1-448a-4b9b-b93b-ad12d2bc3aa2",
       "name": "Code in JavaScript"
     },
     {
@@ -25,10 +25,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1360,
-        96
+        2352,
+        -144
       ],
-      "id": "6786fa58-37fe-42e4-b5d0-5298f51b90b6",
+      "id": "6083aa92-7d00-428d-98a0-43cd498fd496",
       "name": "Send a text message",
       "webhookId": "47cf85a7-eb38-4896-9245-3db6f7951b8e",
       "credentials": {
@@ -48,10 +48,10 @@
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
       "position": [
-        -432,
-        32
+        240,
+        -128
       ],
-      "id": "8919a9e2-c3f6-4fd8-adda-7904c41c1584",
+      "id": "0d97f2ee-10fe-469b-9912-8d81cbc1d6a7",
       "name": "Telegram Trigger1",
       "webhookId": "1dc97171-d211-4f7e-8a17-cac8cc3e621c",
       "credentials": {
@@ -88,10 +88,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        160,
-        32
+        992,
+        -80
       ],
-      "id": "6d69b4d6-9c9d-456a-90db-f61365512145",
+      "id": "8789e2e0-3860-4bca-bdda-b7c61509681b",
       "name": "HTTP Request1",
       "retryOnFail": false,
       "maxTries": 2,
@@ -101,7 +101,7 @@
           "name": "OpenWeatherMap account"
         }
       },
-      "onError": "continueErrorOutput"
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -110,10 +110,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        688,
-        32
+        1440,
+        -224
       ],
-      "id": "898d2633-389b-44a4-874e-15e4b68990d2",
+      "id": "921ef28d-dbd6-4611-9998-582a7442dba6",
       "name": "Code in JavaScript3"
     },
     {
@@ -133,10 +133,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -224,
-        32
+        608,
+        -128
       ],
-      "id": "c446e58c-0187-4b0f-8551-9d6daa0737f0",
+      "id": "3fa2796c-4430-4218-ba86-a9ea5e6aeec9",
       "name": "Edit Fields"
     },
     {
@@ -148,10 +148,10 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        880,
-        128
+        1904,
+        -112
       ],
-      "id": "967f2c1f-2a78-4646-a2d3-96fdcd0e1f73",
+      "id": "547a2c32-b3fa-4cb3-9397-69c6e6498963",
       "name": "Basic LLM Chain",
       "retryOnFail": true,
       "executeOnce": false,
@@ -168,10 +168,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        864,
-        352
+        1952,
+        80
       ],
-      "id": "26f5a77b-f7e1-4ee9-8a6b-1a71e34fc90e",
+      "id": "f9612482-096b-41f6-8de8-09f5cb3d0576",
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
@@ -187,66 +187,11 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -16,
-        32
+        800,
+        -80
       ],
-      "id": "242dd269-d592-4603-a200-24b523c697e9",
+      "id": "b89a4b41-6823-4424-91ef-0b6f28402861",
       "name": "Code in JavaScript1"
-    },
-    {
-      "parameters": {
-        "jsCode": "let texto = $json.cidade_formatada || \"\";\n\n// Remove acentos\nlet semAcento = texto\n  .normalize(\"NFD\")\n  .replace(/[\\u0300-\\u036f]/g, \"\");\n\nreturn [\n  {\n    json: {\n      ...$json,\n      cidade_sem_acentos: semAcento\n    }\n  }\n];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        336,
-        160
-      ],
-      "id": "049a6ff2-702b-43b9-9590-cb01480aac02",
-      "name": "Code in JavaScript2"
-    },
-    {
-      "parameters": {
-        "url": "https://api.openweathermap.org/data/2.5/weather",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "openWeatherMapApi",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "units",
-              "value": "metric"
-            },
-            {
-              "name": "lang",
-              "value": "pt_br"
-            },
-            {
-              "name": "q",
-              "value": "={{ $json.cidade_sem_acentos }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        496,
-        208
-      ],
-      "id": "2961489a-7c1c-4c55-bca3-ecdcdcdb78b4",
-      "name": "HTTP Request",
-      "retryOnFail": false,
-      "maxTries": 2,
-      "credentials": {
-        "openWeatherMapApi": {
-          "id": "IZpAlLQf4vtsW0zf",
-          "name": "OpenWeatherMap account"
-        }
-      },
-      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -265,11 +210,58 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1152,
-        256
+        2208,
+        -48
       ],
-      "id": "76b8713d-0db7-4376-a90d-4620cb610d6b",
+      "id": "c7c81c82-ad20-4d19-9c50-e67248b41f25",
       "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e9a24ff3-fa3c-41aa-a188-4453c3cb78fe",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1168,
+        -128
+      ],
+      "id": "aad709b1-78cc-4433-a472-0f3923ed06cb",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pre-Flight Check: Validação de Integridade e Configuração\nconst input = $input.first().json;\n\n// 1. Verificação de Entrada do Telegram\nconst hasText = input.message && input.message.text;\nconst chatId = input.message?.chat?.id;\n\n// 2. Simulação de Check de Credenciais (Best Practice Sênior)\n// Em ambientes de produção, checamos se as variáveis essenciais estão presentes\nconst config = {\n  hasTelegramToken: !!chatId, // Se recebemos o webhook, o token do Telegram está ok\n  // Adicione aqui verificações de variáveis de ambiente se estiver usando-as\n};\n\nconst errors = [];\n\nif (!hasText) {\n  errors.push(\"Mensagem de texto ausente ou formato inválido.\");\n}\n\nif (!config.hasTelegramToken) {\n  errors.push(\"Falha crítica: Identificador de chat não encontrado.\");\n}\n\n// 3. Resultado da Verificação\nreturn [\n  {\n    json: {\n      status: errors.length === 0 ? \"success\" : \"error\",\n      error_details: errors.join(\" | \"),\n      timestamp: new Date().toISOString(),\n      // Passa os dados originais adiante para não quebrar o fluxo\n      ...input \n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        -128
+      ],
+      "id": "0811307c-7b05-4978-8b0e-7796884eb9b7",
+      "name": "Code in JavaScript2"
     }
   ],
   "pinData": {},
@@ -289,7 +281,7 @@
       "main": [
         [
           {
-            "node": "Edit Fields",
+            "node": "Code in JavaScript2",
             "type": "main",
             "index": 0
           }
@@ -300,18 +292,12 @@
       "main": [
         [
           {
-            "node": "Code in JavaScript3",
+            "node": "If",
             "type": "main",
             "index": 0
           }
         ],
-        [
-          {
-            "node": "Code in JavaScript2",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Code in JavaScript3": {
@@ -358,35 +344,6 @@
         ]
       ]
     },
-    "Code in JavaScript2": {
-      "main": [
-        [
-          {
-            "node": "HTTP Request",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "HTTP Request": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript3",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Code in JavaScript",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Basic LLM Chain": {
       "main": [
         [
@@ -415,6 +372,35 @@
           }
         ]
       ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -423,11 +409,10 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "d8c1004d-56d6-4e16-b3d3-6b7045a3da52",
+  "versionId": "c292460c-84dd-49be-9f1d-c5ecd636e308",
   "meta": {
-    "templateCredsSetupCompleted": true,
     "instanceId": "f847b9d81e5e3d670e25bbda2c8c4fc3f8fa27fa129ac22fbc4a67ab532ce539"
   },
-  "id": "jYZxlnEMzJ7IO0cH",
+  "id": "nUiqxd0z1vkhzUD4",
   "tags": []
 }
