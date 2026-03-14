@@ -13,65 +13,65 @@ O fluxo de dados foi projetado seguindo princípios de **Clean Code** e **resili
 
 ---
 
-## 🔑 Configuração de Credenciais e Variáveis
-
-Para que o workflow opere corretamente, as seguintes credenciais devem ser configuradas no seu ambiente n8n:
-
-| Credencial | Provedor | Função no Fluxo |
-| --- | --- | --- |
-| `telegramApi` | [Telegram BotFather](https://t.me/botfather) | Permite o recebimento de triggers e o envio de mensagens. |
-| `openWeatherMapApi` | [OpenWeatherMap](https://openweathermap.org/) | Fornece dados técnicos como temperatura, umidade e condições climáticas. |
-| `googlePalmApi` | [Google AI Studio](https://aistudio.google.com/) | Utilizada pelo modelo Gemini para naturalização da resposta final. |
-
-Configurar as APIs no n8n é um processo dividido em duas etapas: a **criação da credencial** no painel global e a **vinculação** dessa credencial ao nó específico do seu workflow.
-
-Aqui está o guia técnico para configurar as três chaves fundamentais do seu projeto:
-
----
-
-## 🔑 Passo 1: Criando as Credenciais no Painel do n8n
-
-Para cada serviço, siga este fluxo básico:
-
-1. No menu lateral esquerdo do n8n, clique em **Credentials**.
-2. Clique no botão **Add Credential** (canto superior direito).
-3. Pesquise pelo nome do serviço e siga as instruções abaixo para cada um:
-
-### 1. Telegram API
-
-* **Nome do Serviço:** Procure por `Telegram`.
-* **O que inserir:** Cole o **Access Token** que você recebeu do [@BotFather](https://t.me/botfather).
-* **Nome da Credencial no n8n:** Recomenda-se salvar como `telegramApi` para manter a compatibilidade com o arquivo JSON importado.
-
-### 2. OpenWeatherMap API
-
-* **Nome do Serviço:** Procure por `OpenWeatherMap`.
-* **O que inserir:** Cole a sua **API Key** gerada no portal do [OpenWeatherMap](https://home.openweathermap.org/api_keys).
-* **Nome da Credencial no n8n:** Salve como `openWeatherMapApi`.
-
-### 3. Google Gemini (AI)
-
-* **Nome do Serviço:** Procure por `Google Gemini(PaLM) Api`.
-* **O que inserir:** Cole a **API Key** obtida no [Google AI Studio](https://aistudio.google.com/).
-* **Nome da Credencial no n8n:** Salve como `googlePalmApi`.
-
----
-
-## 🔗 Passo 2: Vinculando as Credenciais aos Nós
-
-Após criar as chaves, você precisa "avisar" aos nós do workflow que elas devem ser usadas:
-
-1. **No nó do Telegram:** Abra o nó `Telegram Trigger1`, vá até o campo **Credential for Telegram API** e selecione a credencial `telegramApi` que você criou.
-2. **No nó de Clima:** Abra o nó `HTTP Request1`, clique em **Authentication** e selecione `Generic Credential Type`. No campo **Credential**, selecione `openWeatherMapApi`.
-3. **No nó de IA:** Abra o nó `Google Gemini Chat Model`, vá em **Credential for Google Gemini(PaLM) Api** e selecione `googlePalmApi`.
-
----
-
-## 💡 Dica de Especialista: O Teste de Conexão
-
-Sempre que terminar de configurar uma credencial, clique no botão **Test Connection** dentro da janela de edição da credencial. Se aparecer um check verde, a comunicação entre o n8n e o servidor externo (Telegram/Google) está funcionando perfeitamente.
-
----
+  ## 🔑 Configuração de Credenciais e Variáveis
+  
+  Para que o workflow opere corretamente, as seguintes credenciais devem ser configuradas no seu ambiente n8n:
+  
+  | Credencial | Provedor | Função no Fluxo |
+  | --- | --- | --- |
+  | `telegramApi` | [Telegram BotFather](https://t.me/botfather) | Permite o recebimento de triggers e o envio de mensagens. |
+  | `openWeatherMapApi` | [OpenWeatherMap](https://openweathermap.org/) | Fornece dados técnicos como temperatura, umidade e condições climáticas. |
+  | `googlePalmApi` | [Google AI Studio](https://aistudio.google.com/) | Utilizada pelo modelo Gemini para naturalização da resposta final. |
+  
+  Configurar as APIs no n8n é um processo dividido em duas etapas: a **criação da credencial** no painel global e a **vinculação** dessa credencial ao nó específico do seu workflow.
+  
+  Aqui está o guia técnico para configurar as três chaves fundamentais do seu projeto:
+  
+  ---
+  
+  ## 🔑 Passo 1: Criando as Credenciais no Painel do n8n
+  
+  Para cada serviço, siga este fluxo básico:
+  
+  1. No menu lateral esquerdo do n8n, clique em **Credentials**.
+  2. Clique no botão **Add Credential** (canto superior direito).
+  3. Pesquise pelo nome do serviço e siga as instruções abaixo para cada um:
+  
+  ### 1. Telegram API
+  
+  * **Nome do Serviço:** Procure por `Telegram`.
+  * **O que inserir:** Cole o **Access Token** que você recebeu do [@BotFather](https://t.me/botfather).
+  * **Nome da Credencial no n8n:** Recomenda-se salvar como `telegramApi` para manter a compatibilidade com o arquivo JSON importado.
+  
+  ### 2. OpenWeatherMap API
+  
+  * **Nome do Serviço:** Procure por `OpenWeatherMap`.
+  * **O que inserir:** Cole a sua **API Key** gerada no portal do [OpenWeatherMap](https://home.openweathermap.org/api_keys).
+  * **Nome da Credencial no n8n:** Salve como `openWeatherMapApi`.
+  
+  ### 3. Google Gemini (AI)
+  
+  * **Nome do Serviço:** Procure por `Google Gemini(PaLM) Api`.
+  * **O que inserir:** Cole a **API Key** obtida no [Google AI Studio](https://aistudio.google.com/).
+  * **Nome da Credencial no n8n:** Salve como `googlePalmApi`.
+  
+  ---
+  
+  ## 🔗 Passo 2: Vinculando as Credenciais aos Nós
+  
+  Após criar as chaves, você precisa "avisar" aos nós do workflow que elas devem ser usadas:
+  
+  1. **No nó do Telegram:** Abra o nó `Telegram Trigger1`, vá até o campo **Credential for Telegram API** e selecione a credencial `telegramApi` que você criou.
+  2. **No nó de Clima:** Abra o nó `HTTP Request1`, clique em **Authentication** e selecione `Generic Credential Type`. No campo **Credential**, selecione `openWeatherMapApi`.
+  3. **No nó de IA:** Abra o nó `Google Gemini Chat Model`, vá em **Credential for Google Gemini(PaLM) Api** e selecione `googlePalmApi`.
+  
+  ---
+  
+  ## 💡 Dica de Especialista: O Teste de Conexão
+  
+  Sempre que terminar de configurar uma credencial, clique no botão **Test Connection** dentro da janela de edição da credencial. Se aparecer um check verde, a comunicação entre o n8n e o servidor externo (Telegram/Google) está funcionando perfeitamente.
+  
+  ---
 
 
 ## 📥 Guia de Instalação e Importação (Passo a Passo)
