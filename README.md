@@ -23,12 +23,7 @@ O fluxo de dados foi projetado seguindo princípios de **Clean Code** e **resili
   | `openWeatherMapApi` | [OpenWeatherMap](https://openweathermap.org/) | Fornece dados técnicos como temperatura, umidade e condições climáticas. |
   | `googlePalmApi` | [Google AI Studio](https://aistudio.google.com/) | Utilizada pelo modelo Gemini para naturalização da resposta final. |
   
-  Configurar as APIs no n8n é um processo dividido em duas etapas: a **criação da credencial** no painel global e a **vinculação** dessa credencial ao nó específico do seu workflow.
-  
-  Aqui está o guia técnico para configurar as três chaves fundamentais do seu projeto:
-  
-  ---
-  
+    
   ## 🔑 Passo 1: Criando as Credenciais no Painel do n8n
   
   Para cada serviço, siga este fluxo básico:
