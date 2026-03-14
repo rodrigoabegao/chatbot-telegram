@@ -1,260 +1,74 @@
-Aqui está o **arquivo README.md completo**, pronto para você copiar e colocar no GitHub:
+# 🌤️ Telegram WeatherBot: Orquestração com n8n, IA e APIs Geográficas
+
+Este repositório contém o workflow para um bot do Telegram que fornece dados meteorológicos em tempo real. O sistema utiliza o **n8n** como orquestrador central, integra-se à **API do OpenWeatherMap** e aplica **Inteligência Artificial (Google Gemini)** para o refinamento de linguagem natural (NLG).
+
+## 🏗️ Arquitetura do Sistema
+
+O fluxo de dados foi projetado seguindo princípios de **Clean Code** e **resiliência**, dividido em quatro camadas modulares:
+
+1. **Ingestão & Validação:** Recebimento de webhooks e verificação de integridade dos dados.
+2. **Processamento Geográfico:** Normalização de strings e sanitização via JavaScript para evitar falhas em nomes com acentos ou caracteres especiais.
+3. **Integração de Dados:** Consumo de serviços externos via REST API.
+4. **Camada Cognitiva:** Processamento de dados brutos através de Large Language Models (LLM) para gerar respostas humanizadas.
 
 ---
 
-# 🌦️ Bot de Clima no Telegram com n8n
+## 🔑 Configuração de Credenciais e Variáveis
 
-## Desafio – Fase 2
+Para que o workflow opere corretamente, as seguintes credenciais devem ser configuradas no seu ambiente n8n:
 
-Este projeto implementa um **bot de clima no Telegram** utilizando **n8n**, integrando a API do OpenWeatherMap e o modelo **Google Gemini** para melhoria opcional da resposta final.
-
-O workflow foi desenvolvido seguindo rigorosamente os requisitos da Fase 2 do desafio, incluindo fallback determinístico obrigatório para garantir funcionamento mesmo sem uso de IA.
-
----
-
-# 🚀 Funcionalidades
-
-* ✅ Recebe cidade via Telegram
-* ✅ Normaliza entrada do usuário
-* ✅ Trata acentuação automaticamente
-* ✅ Consulta API OpenWeatherMap
-* ✅ Gera resposta determinística
-* ✅ Usa Google Gemini para melhorar a saída (opcional)
-* ✅ Possui fallback completo sem IA
-* ✅ Retorna sempre JSON estruturado
+| Credencial | Provedor | Função no Fluxo |
+| --- | --- | --- |
+| `telegramApi` | [Telegram BotFather](https://t.me/botfather) | Permite o recebimento de triggers e o envio de mensagens. |
+| `openWeatherMapApi` | [OpenWeatherMap](https://openweathermap.org/) | Fornece dados técnicos como temperatura, umidade e condições climáticas. |
+| `googlePalmApi` | [Google AI Studio](https://aistudio.google.com/) | Utilizada pelo modelo Gemini para naturalização da resposta final. |
 
 ---
 
-# 🧠 Arquitetura do Workflow
+## 📥 Guia de Instalação (Passo a Passo)
 
-```
-Telegram Trigger
-   ↓
-Tratamento da entrada
-   ↓
-Consulta OpenWeatherMap (com acento)
-   ↓
-Consulta OpenWeatherMap (sem acento - fallback)
-   ↓
-Code Node (mensagem determinística)
-   ↓
-Google Gemini (melhoria opcional)
-   ↓
-Fallback final
-   ↓
-Telegram Send Message
-```
+1. **Download do Projeto:** Baixe o arquivo `workflow-telegram-chatbot (1).json`.
+2. **Importação no n8n:**
+* Acesse sua instância do n8n.
+* No painel lateral, vá em **Workflows** > **Add Workflow**.
+* No menu de opções (três pontos no canto superior direito), selecione **Import from File**.
+* Selecione o arquivo JSON baixado.
 
----
 
-# 📌 Como Funciona
+3. **Vinculação de Credenciais:**
+* Abra os nós **Telegram Trigger1**, **HTTP Request1** e **Google Gemini Chat Model**.
+* Em cada um, selecione a credencial correspondente criada previamente no seu painel de `Credentials`.
 
-## 1️⃣ Entrada do Usuário
 
-O usuário pode enviar:
+4. **Ativação:**
+* Clique no botão **Save** e, em seguida, alterne a chave para **Active** no canto superior direito para registrar o webhook no Telegram.
 
-```
-São Paulo,SP
-sao paulo sp
-Vitória da Conquista
-Salvador BA
-```
 
-O workflow:
-
-* Remove espaços extras
-* Remove apóstrofos
-* Ajusta capitalização
-* Detecta estado (UF)
-* Define país como BR por padrão
-* Monta query no formato:
-
-```
-Cidade,UF,BR
-```
 
 ---
 
-## 2️⃣ Consulta à API
+## 🛡️ Protocolo de Robustez (Senior Features)
 
-Endpoint utilizado:
+### 1. Pre-Flight Check (Validação Inicial)
 
-```
-https://api.openweathermap.org/data/2.5/weather
-```
+O nó `Code in JavaScript2` atua como um firewall de inicialização. Ele valida se a mensagem recebida possui texto e se o `chatId` está presente antes de processar qualquer lógica, economizando recursos de processamento e tokens de API.
 
-Parâmetros:
+### 2. Normalização de Strings (`Code in JavaScript1`)
 
-* `units=metric`
-* `lang=pt_br`
-* `q=Cidade,UF,BR`
+Utilizamos lógica avançada de **Regex** para tratar entradas variadas (ex: "São Paulo, SP", "curitiba br"). O script remove espaços extras, trata apóstrofos e aplica `encodeURIComponent` para garantir que a requisição HTTP não quebre com caracteres especiais.
 
-A temperatura é retornada em graus Celsius.
+### 3. Tratamento de Erros e Fallback
+
+O workflow possui um nó condicional (`If`) que verifica se a cidade foi encontrada pela API. Caso ocorra um erro (Cidade não encontrada), o fluxo é desviado para uma mensagem de erro educativa preparada pelo nó `Code in JavaScript`, que sugere ao usuário a correção da grafia.
 
 ---
 
-## 3️⃣ Tratamento de Acentuação
+## ⚙️ Especificações Técnicas
 
-Se a primeira tentativa falhar:
-
-* O workflow remove os acentos da cidade
-* Tenta novamente a consulta
-* Caso ainda falhe, retorna mensagem orientativa ao usuário
+* **Versão n8n:** 1.9+.
+* **Modelo de IA:** Gemini 1.5 Flash (configurado para baixa latência).
+* **Formato de Resposta:** JSON Estrito (garante que a saída do LLM seja sempre interpretável pelo nó de envio).
 
 ---
 
-# 🤖 Uso do Google Gemini
-
-O workflow inclui um nó **Google Gemini Chat Model** para melhorar a mensagem final.
-
-Ele:
-
-* Reescreve a resposta de forma mais natural
-* Mantém os valores numéricos inalterados
-* Garante resposta em português
-* Retorna apenas JSON válido
-
-## Configuração utilizada:
-
-* Temperature: **0.1** (baixa, para respostas determinísticas)
-* Saída obrigatória em formato:
-
-```json
-{"message":"texto","ok":true}
-```
-
-* Sem emojis
-* Sem markdown
-* Sem texto adicional fora do JSON
-
----
-
-# 🛡️ Fallback Obrigatório (Sem IA)
-
-Caso o Google Gemini não esteja configurado:
-
-* O bot continua funcionando normalmente
-* Um **Code Node determinístico** gera a mensagem final
-* A avaliação pode ser realizada sem custos de IA
-
-Exemplo de saída:
-
-```json
-{
-  "message": "A temperatura em Salvador é de 27°C.",
-  "ok": true
-}
-```
-
----
-
-# 🔑 Configuração de Credenciais (IMPORTANTE)
-
-## ⚠️ Este repositório NÃO contém:
-
-* API Keys
-* Tokens do Telegram
-* Credenciais do Gemini
-
-Todas as credenciais devem ser configuradas manualmente no n8n.
-
----
-
-## 📌 1. Telegram
-
-1. Acesse @BotFather no Telegram
-2. Crie um novo bot
-3. Copie o token gerado
-4. No n8n:
-
-   * Vá em **Credentials**
-   * Adicione **Telegram API**
-   * Insira o token
-
----
-
-## 📌 2. OpenWeatherMap
-
-1. Crie uma conta em:
-   [https://openweathermap.org/](https://openweathermap.org/)
-2. Gere sua API Key
-3. No n8n:
-
-   * Vá em **Credentials**
-   * Adicione a credencial da API
-   * Insira sua chave
-
----
-
-## 📌 3. Google Gemini (Opcional)
-
-1. Acesse o Google AI Studio
-2. Gere sua API Key
-3. No n8n:
-
-   * Vá em **Credentials**
-   * Adicione Google Gemini
-   * Insira sua chave
-
-⚠️ Caso não configure o Gemini, o workflow continuará funcionando usando o fallback determinístico.
-
----
-
-# 🧪 Como Testar
-
-Após configurar as credenciais:
-
-1. Ative o workflow no n8n
-2. Envie uma mensagem ao bot no Telegram:
-
-```
-São Paulo,SP
-```
-
-ou
-
-```
-Salvador BA
-```
-
-O bot retornará a temperatura atual da cidade.
-
----
-
-# 📂 Estrutura do Repositório
-
-```
-/workflow-telegram-chatbot.json
-/README.md
-```
-
----
-
-# 🔒 Segurança
-
-* Nenhuma chave está versionada
-* Nenhum token está exposto
-* Credenciais são gerenciadas pelo sistema seguro do n8n
-* O projeto segue boas práticas de segurança
-
----
-
-# 📌 Requisitos do Desafio Atendidos
-
-* ✔ Bot funcional no Telegram
-* ✔ Integração com API externa
-* ✔ Tratamento de entrada
-* ✔ Tratamento de erro
-* ✔ Uso do Google Gemini
-* ✔ Temperatura baixa (0–0.2)
-* ✔ Saída determinística em JSON
-* ✔ Fallback obrigatório implementado
-* ✔ Documentação completa
-* ✔ Nenhuma chave exposta
-
----
-
-# 👨‍💻 Autor
-
-Rodrigo Garcia Abegão
-Desafio Fase 2 — Bot de Clima com n8n
+**Documentação gerada por Rodrigo Garcia Abegão.**
